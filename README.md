@@ -21,6 +21,12 @@ Screenshots use made-up sample data.
 
 ## Install
 
+**Firefox:** install from [Firefox Add-ons](https://addons.mozilla.org/en-GB/firefox/addon/timetable-plus-for-classcharts/).
+
+**Chrome:** coming soon to the Chrome Web Store.
+
+### Running from source
+
 **Chrome:** go to `chrome://extensions`, turn on Developer mode, click Load unpacked and choose the `extension` folder.
 
 **Firefox:** go to `about:debugging#/runtime/this-firefox`, click Load Temporary Add-on and choose `extension/manifest.json`. This lasts until Firefox restarts.
