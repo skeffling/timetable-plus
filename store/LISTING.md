@@ -121,8 +121,7 @@ the developer or third parties.
 > The extension observes (non-blocking) the Authorization header that the ClassCharts parent web
 > app sends to its own API at https://www.classcharts.com/apiv2parent/*, stores it in
 > storage.session, and replays it to the same API to fetch several days of timetable. No other
-> hosts are contacted. The three innerHTML warnings from the linter are for templates where every
-> dynamic value goes through esc() (HTML-escapes & < > " '). Sample data without an account:
+> hosts are contacted. Sample data without an account:
 > open moz-extension://<id>/timetable.html?demo (add &pocket for the pocket card).
 
 ---

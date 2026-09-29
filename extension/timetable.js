@@ -114,7 +114,7 @@ async function init() {
   }
 
   if (DEMO) {
-    $('#pupil').innerHTML = '<option value="demo">Alex Example (demo)</option>';
+    $('#pupil').replaceChildren(new Option('Alex Example (demo)', 'demo'));
     return generate();
   }
 
@@ -151,7 +151,7 @@ async function loadPupils(preferredId) {
     console.warn('Could not load pupil list', e);
   }
   if (!pupils.length && preferredId) pupils = [{ id: preferredId, name: `Pupil ${preferredId}` }];
-  select.innerHTML = pupils.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  select.replaceChildren(...pupils.map((p) => new Option(p.name, p.id)));
   if (preferredId && pupils.some((p) => p.id === preferredId)) select.value = preferredId;
   select.addEventListener('change', generate);
 }
@@ -304,7 +304,7 @@ function normalise(json, iso) {
     }));
 }
 
-// ClassCharts sends names HTML-encoded ("Pure &amp; Applied"); decode once so esc() doesn't double it.
+// ClassCharts sends names HTML-encoded ("Pure &amp; Applied"); decode once so they display as text.
 // DOMParser gives inert text, so nothing in the string runs.
 function decode(v) {
   const s = String(v ?? '');
@@ -333,36 +333,45 @@ function render() {
   assignColours(allLessons);
   const slots = buildSlots(allLessons);
   const out = $('#weeks-out');
-  out.innerHTML = '';
 
   if (pocket) {
     // Each week is an ID-card-sized (85.6×54mm) card, two per row with a fold line between,
     // so a fortnight cuts out as one strip and folds into a double-sided card.
-    const sheet = document.createElement('div');
-    sheet.className = 'pocket-sheet';
-    loaded.forEach((days, w) => sheet.appendChild(weekSection('week card', days, w,
-      `<span class="wc">${esc(firstName)}</span>`,
-      DAY_NAMES.map((d) => `<th>${d}</th>`).join(''),
-      slots.map((slot) => `<tr><th>${esc(slot.time.split('–')[0])}</th>${lessonCells(slot, days, slots.length, '—', (l) => pocketLesson(l, opts))}</tr>`).join(''))));
-    out.appendChild(sheet);
+    out.replaceChildren(h('div', { class: 'pocket-sheet' }, loaded.map((days, w) => weekSection('week card', days, w,
+      h('span', { class: 'wc' }, firstName),
+      DAY_NAMES.map((d) => h('th', {}, d)),
+      slots.map((slot) => h('tr', {},
+        h('th', {}, slot.time.split('–')[0]),
+        lessonCells(slot, days, slots.length, '—', (l) => pocketLesson(l, opts))))))));
   } else {
-    loaded.forEach((days, w) => out.appendChild(weekSection('week', days, w,
-      opts.dates ? `<span class="wc">w/c ${fmtDate(days[0].date, true)}</span>` : '',
-      days.map((d, i) => `<th>${DAY_NAMES[i]}${opts.dates ? `<span class="date">${fmtDate(d.date)}</span>` : ''}</th>`).join(''),
-      slots.map((slot) => `<tr><th><span class="pname">Period ${slot.index + 1}</span><span class="ptime">${esc(slot.time)}</span></th>${lessonCells(slot, days, slots.length, 'No lessons', (l) => fullLesson(l, slot, opts))}</tr>`).join(''))));
+    out.replaceChildren(...loaded.map((days, w) => weekSection('week', days, w,
+      opts.dates && h('span', { class: 'wc' }, `w/c ${fmtDate(days[0].date, true)}`),
+      days.map((d, i) => h('th', {}, DAY_NAMES[i], opts.dates && h('span', { class: 'date' }, fmtDate(d.date)))),
+      slots.map((slot) => h('tr', {},
+        h('th', {}, h('span', { class: 'pname' }, `Period ${slot.index + 1}`), h('span', { class: 'ptime' }, slot.time)),
+        lessonCells(slot, days, slots.length, 'No lessons', (l) => fullLesson(l, slot, opts)))))));
   }
 }
 
+// Builds DOM nodes directly rather than from HTML strings, so text from ClassCharts is only ever
+// inserted as text. Children may be nodes, strings or nested arrays; null/false/'' are skipped.
+function h(tag, attrs = {}, ...children) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') el.className = v;
+    else if (k === 'style') el.style.cssText = v;
+    else el.setAttribute(k, v);
+  }
+  el.append(...children.flat(Infinity).filter((c) => c != null && c !== false && c !== ''));
+  return el;
+}
+
 function weekSection(className, days, w, aside, headCells, rows) {
-  const section = document.createElement('section');
-  section.className = className;
-  section.innerHTML = `
-    <div class="week-head">${weekHeading(days, w)}${aside}</div>
-    <table>
-      <thead><tr><th></th>${headCells}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-  return section;
+  return h('section', { class: className },
+    h('div', { class: 'week-head' }, weekHeading(days, w), aside),
+    h('table', {},
+      h('thead', {}, h('tr', {}, h('th'), headCells)),
+      h('tbody', {}, rows)));
 }
 
 // Saved per pupil, keyed by rota week number when ClassCharts gives one (so "Week A" sticks to
@@ -371,36 +380,37 @@ function weekHeading(days, w) {
   const rota = rotaWeek(days);
   const key = rota != null ? `rota${rota}` : `idx${w}`;
   const text = pupilNames().weeks[key] || `Week ${rota ?? w + 1}`;
-  return `<h2 contenteditable="true" spellcheck="false" data-key="${key}">${esc(text)}</h2>`;
+  return h('h2', { contenteditable: 'true', spellcheck: 'false', 'data-key': key }, text);
 }
 
 // One table row's day cells. A day with no lessons at all (holiday) is a single cell spanning every row.
-function lessonCells(slot, days, rowCount, dayOffText, lessonHtml) {
+function lessonCells(slot, days, rowCount, dayOffText, lessonNodes) {
   return days.map((day) => {
-    if (!day.lessons.length) return slot.index === 0 ? `<td class="dayoff" rowspan="${rowCount}">${dayOffText}</td>` : '';
+    if (!day.lessons.length) return slot.index === 0 && h('td', { class: 'dayoff', rowspan: rowCount }, dayOffText);
     const lessons = day.lessons.filter((l) => slotKey(l) === slot.key);
-    if (!lessons.length) return '<td class="nolesson"></td>';
-    return `<td class="has-lesson" style="background:${colourFor(lessons[0].subject)}">${lessons.map(lessonHtml).join('')}</td>`;
-  }).join('');
+    if (!lessons.length) return h('td', { class: 'nolesson' });
+    return h('td', { class: 'has-lesson', style: `background:${colourFor(lessons[0].subject)}` }, lessons.map(lessonNodes));
+  });
 }
 
 function fullLesson(l, slot, opts) {
   const meta = [opts.teacher && l.teacher, opts.room && l.room].filter(Boolean).join(' · ');
   const time = `${l.start}–${l.end}`;
-  return `<div class="lesson">
-    <div class="subject">${esc(l.subject)}</div>
-    ${opts.code && l.code && l.code !== l.subject ? `<div class="code">${esc(l.code)}</div>` : ''}
-    ${meta ? `<div class="meta">${esc(meta)}</div>` : ''}
-    ${l.start && time !== slot.time ? `<div class="time">${esc(time)}</div>` : ''}
-  </div>`;
+  return h('div', { class: 'lesson' },
+    h('div', { class: 'subject' }, l.subject),
+    opts.code && l.code && l.code !== l.subject && h('div', { class: 'code' }, l.code),
+    meta && h('div', { class: 'meta' }, meta),
+    l.start && time !== slot.time && h('div', { class: 'time' }, time));
 }
 
 // Short subject (click to rename), room on the left, teacher initials on the right.
 function pocketLesson(l, opts) {
-  const room = opts.room && l.room ? `<span>${esc(l.room)}</span>` : '';
-  const teacher = opts.teacher && l.teacher ? `<span class="teacher">${esc(shortTeacher(l.teacher))}</span>` : '';
-  return `<div class="subject" contenteditable="true" spellcheck="false" title="Click to rename" data-subject="${esc(l.subject)}">${esc(shortSubject(l))}</div>
-    ${room || teacher ? `<div class="meta">${room}${teacher}</div>` : ''}`;
+  const room = opts.room && l.room && h('span', {}, l.room);
+  const teacher = opts.teacher && l.teacher && h('span', { class: 'teacher' }, shortTeacher(l.teacher));
+  return [
+    h('div', { class: 'subject', contenteditable: 'true', spellcheck: 'false', title: 'Click to rename', 'data-subject': l.subject }, shortSubject(l)),
+    (room || teacher) && h('div', { class: 'meta' }, room, teacher),
+  ];
 }
 
 const SHORT_NAMES = [
@@ -494,9 +504,6 @@ function hhmm(v) {
 }
 
 function clamp(n, lo, hi) { return Math.min(hi, Math.max(lo, n)); }
-function esc(s) {
-  return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
 function setStatus(msg, isError = false) {
   const el = $('#status');
   el.textContent = msg;
