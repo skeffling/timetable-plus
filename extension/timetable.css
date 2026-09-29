@@ -1,0 +1,143 @@
+:root {
+  --ink: #1d2330;
+  --muted: #5d6677;
+  --line: #c9ced8;
+  --bg: #f4f6f9;
+  --accent: #2196f3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 16px;
+  font: 14px/1.35 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.controls label { display: inline-flex; align-items: center; gap: 6px; }
+.controls .sep { flex: 0 0 1px; height: 22px; background: var(--line); }
+
+button {
+  font: inherit;
+  padding: 5px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.status { margin: 0 0 12px; color: var(--muted); }
+.status.error { color: #b3261e; font-weight: 600; }
+#grant { margin-bottom: 12px; }
+
+main {
+  background: #fff;
+  padding: 18px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+main:has(#weeks-out:empty) { display: none; }
+
+h1 { margin: 0 0 12px; font-size: 22px; }
+h1:empty { display: none; }
+
+.week { margin-bottom: 24px; }
+.week:last-child { margin-bottom: 0; }
+.week-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.week-head h2 { margin: 0; font-size: 18px; }
+.week-head .wc { color: var(--muted); font-size: 13px; }
+
+[contenteditable]:hover { outline: 1px dashed var(--line); }
+[contenteditable]:focus { outline: 1px solid var(--accent); }
+
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th, td { border: 1px solid var(--line); padding: 6px 7px; vertical-align: top; }
+thead th:first-child { width: 92px; }
+thead th { background: #eef1f5; font-size: 13px; }
+thead th .date { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+tbody th { width: 92px; text-align: left; background: #f8f9fb; font-size: 12px; }
+tbody th .pname { display: block; font-size: 13px; }
+tbody th .ptime { color: var(--muted); font-weight: 400; }
+
+td.has-lesson { height: 64px; }
+.subject { font-weight: 700; font-size: 14px; }
+.code { font-size: 11px; color: var(--muted); }
+.meta { font-size: 12px; color: #333; }
+.time { font-size: 11px; color: var(--muted); }
+.lesson + .lesson { border-top: 1px dashed rgba(0, 0, 0, .2); margin-top: 4px; padding-top: 4px; }
+td.nolesson { background: repeating-linear-gradient(45deg, #fafafa, #fafafa 6px, #f0f0f0 6px, #f0f0f0 12px); }
+td.dayoff { text-align: center; vertical-align: middle; color: var(--muted); font-style: italic; }
+
+.hint { color: var(--muted); font-size: 12px; }
+
+/* One-page mode shrinks everything so two weeks fit on a landscape sheet. */
+body.one-page td.has-lesson { height: auto; }
+body.one-page .week { margin-bottom: 10px; }
+body.one-page th, body.one-page td { padding: 3px 5px; }
+
+/* Pocket size: real-world mm so the printout matches what's on screen. */
+body.pocket h1, body.pocket .week-head .wc:empty { display: none; }
+body.pocket main { width: fit-content; }
+/* ID-card width (ISO CR80, 85.6 × 54 mm); height shrinks to fit the lessons, capped at 54 mm,
+   so a folded card fits a standard lanyard holder. */
+.pocket-sheet { display: grid; grid-template-columns: repeat(2, 85.6mm); row-gap: 6mm; }
+.card {
+  width: 85.6mm;
+  max-height: 54mm;
+  padding: 1mm 1.2mm 1.2mm;
+  margin: 0;
+  border: 0.3mm dashed #888;
+  overflow: hidden;
+  font-size: 6pt;
+  line-height: 1.1;
+}
+.card:nth-child(odd) { border-right-style: dotted; border-right-color: #bbb; }
+.card:nth-child(even) { border-left: 0; }
+.card .week-head { justify-content: space-between; align-items: center; height: 3.4mm; margin-bottom: 0.5mm; gap: 2mm; }
+.card .week-head h2 { font-size: 7.5pt; }
+.card .week-head .wc { font-size: 6pt; }
+.card th, .card td { padding: 0.15mm 0.6mm; border-width: 0.2mm; vertical-align: middle; }
+.card thead th { font-size: 6pt; }
+.card td { height: 6.4mm; } /* keeps free periods the same height as lessons */
+.card tbody th { width: 7mm; font-size: 5.5pt; text-align: center; padding: 0; }
+.card thead th:first-child { width: 7mm; }
+.card .subject { font-size: 6.5pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card .meta { display: flex; gap: 0.8mm; font-size: 5.5pt; color: #444; white-space: nowrap; }
+.card .meta .teacher { margin-left: auto; }
+.card .meta span:not(.teacher) { overflow: hidden; text-overflow: ellipsis; }
+.card td.dayoff { font-style: normal; }
+
+/* Pocket cards print on portrait A4; everything else on landscape. */
+@page { size: A4 landscape; margin: 10mm; }
+@page pocket { size: A4 portrait; margin: 7mm; }
+body.pocket main { page: pocket; }
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .no-print { display: none !important; }
+  main { border: 0; padding: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  [contenteditable] { outline: none !important; }
+  .week { break-after: page; break-inside: avoid; margin: 0; }
+  .week:last-child { break-after: auto; }
+  body.one-page .week { break-after: auto; }
+  body.one-page { font-size: 11px; }
+  body.one-page .subject { font-size: 12px; }
+  body.one-page .meta { font-size: 10px; }
+  body.pocket .week { break-after: auto; }
+  body.pocket .pocket-sheet { break-inside: avoid; }
+}

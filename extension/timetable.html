@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Printable Timetable</title>
+  <link rel="stylesheet" href="timetable.css">
+</head>
+<body>
+  <header class="controls no-print">
+    <label>Pupil <select id="pupil"></select></label>
+    <label>Starting Monday <input type="date" id="start"></label>
+    <label>Weeks <select id="weeks">
+      <option value="auto" selected>Auto-detect</option>
+      <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+    </select></label>
+    <button id="generate" title="Fetch the timetable from ClassCharts again">Reload</button>
+    <span class="sep"></span>
+    <label><input type="checkbox" id="showTeacher" checked> Teacher</label>
+    <label><input type="checkbox" id="showRoom" checked> Room</label>
+    <label><input type="checkbox" id="showCode"> Class code</label>
+    <label><input type="checkbox" id="showDates" checked> Dates</label>
+    <label><input type="checkbox" id="onePage"> Fit on one page</label>
+    <label><input type="checkbox" id="pocket"> Pocket size</label>
+    <button id="reset" title="Put the title, week names and short subject names back to the defaults">Reset names</button>
+    <button id="print" class="primary">Print</button>
+  </header>
+
+  <div id="status" class="status no-print"></div>
+  <button id="grant" class="no-print" hidden>Allow access to classcharts.com</button>
+
+  <main id="output">
+    <h1 id="title" contenteditable="true" spellcheck="false"></h1>
+    <div id="weeks-out"></div>
+  </main>
+
+  <p class="hint no-print">Tip: click the title, a week heading (e.g. "Week 1" → "Week A") or a subject on a pocket card to rename it. Your changes and settings are remembered.</p>
+
+  <script src="common.js"></script>
+  <script src="timetable.js"></script>
+</body>
+</html>
