@@ -3,6 +3,14 @@
 A browser extension for Chrome and Firefox that makes the ClassCharts parent timetable easier to use.
 ClassCharts shows one day at a time. Timetable Plus shows the whole rota at once.
 
+![Printable two-week timetable](store/screenshots/1-printable-timetable.png)
+
+![ID-card-sized pocket card](store/screenshots/2-pocket-card.png)
+
+![Timetable Plus button and panel on the ClassCharts timetable](store/screenshots/3-extras-panel.png)
+
+Screenshots use made-up sample data.
+
 ## Features
 
 - Printable timetable: the whole rota on one page, colour-coded by subject, with teachers and rooms.
