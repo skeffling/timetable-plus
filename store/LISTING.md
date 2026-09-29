@@ -114,7 +114,7 @@ the developer or third parties.
 
 **Support site / email:** your GitHub repo issues page, and/or an email you're happy to publish.
 
-**License:** choose one (e.g. MIT) if listing publicly.
+**License:** MIT (see LICENSE).
 
 **Notes to reviewer:**
 

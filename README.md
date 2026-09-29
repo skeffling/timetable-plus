@@ -38,3 +38,7 @@ The extension only talks to classcharts.com, using the login you already have op
 Run `store/build.sh` to create the Chrome and Firefox zips in `dist/`. Store listing text is in `store/LISTING.md`.
 
 This is an independent project and is not affiliated with ClassCharts or Tes.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
