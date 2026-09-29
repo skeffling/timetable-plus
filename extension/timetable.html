@@ -23,6 +23,7 @@
     <label><input type="checkbox" id="onePage"> Fit on one page</label>
     <label><input type="checkbox" id="pocket"> Pocket size</label>
     <button id="reset" title="Put the title, week names and short subject names back to the defaults">Reset names</button>
+    <button id="phone" title="Make a phone-sized image for a lock screen or to share">Phone image</button>
     <button id="print" class="primary">Print</button>
   </header>
 
@@ -37,6 +38,20 @@
   <p class="hint no-print">Tip: click the title, a week heading (e.g. "Week 1" → "Week A") or a subject on a pocket card to rename it. Your changes and settings are remembered.</p>
 
   <script src="common.js"></script>
+  <dialog id="phoneDialog" class="phone-dialog no-print">
+    <div class="phone-options">
+      <label><input type="checkbox" id="phoneLock" checked> Leave space for the lock screen clock</label>
+      <label><input type="checkbox" id="phoneDark" checked> Dark background</label>
+    </div>
+    <img id="phonePreview" alt="Phone-sized timetable image">
+    <div class="phone-actions">
+      <button id="phoneShare" hidden>Share</button>
+      <button id="phoneDownload" class="primary">Download image</button>
+      <button id="phoneClose">Close</button>
+    </div>
+  </dialog>
+
   <script src="timetable.js"></script>
+  <script src="phone.js"></script>
 </body>
 </html>

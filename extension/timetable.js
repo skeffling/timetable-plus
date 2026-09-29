@@ -14,7 +14,7 @@ let pending = null;
 const dayCache = new Map(); // `${pupil}|${iso}` -> lessons, so changing options only fetches new days
 
 // Remembered between visits (storage.local; plain localStorage in demo mode).
-const OPTION_IDS = ['showTeacher', 'showRoom', 'showCode', 'showDates', 'onePage', 'pocket'];
+const OPTION_IDS = ['showTeacher', 'showRoom', 'showCode', 'showDates', 'onePage', 'pocket', 'phoneLock', 'phoneDark'];
 let shortNames = {}; // full subject name -> user's short name for pocket cards
 let names = {};      // pupilId -> { title, weeks: { 'rota2' | 'idx0': heading } }
 let saveTimer = null;
@@ -323,11 +323,9 @@ function render() {
   document.body.classList.toggle('one-page', $('#onePage').checked && !pocket);
   document.body.classList.toggle('pocket', pocket);
 
-  const firstName = ($('#pupil').selectedOptions[0]?.textContent || '').split(' ')[0];
+  const firstName = pupilFirstName();
   const title = $('#title');
-  if (document.activeElement !== title) {
-    title.textContent = pupilNames().title || (firstName ? `${firstName}'s Timetable` : 'Timetable');
-  }
+  if (document.activeElement !== title) title.textContent = pageTitle();
 
   const allLessons = loaded.flat().flatMap((d) => d.lessons);
   assignColours(allLessons);
@@ -374,13 +372,26 @@ function weekSection(className, days, w, aside, headCells, rows) {
       h('tbody', {}, rows)));
 }
 
+function weekHeading(days, w) {
+  const { key, text } = weekTitle(days, w);
+  return h('h2', { contenteditable: 'true', spellcheck: 'false', 'data-key': key }, text);
+}
+
 // Saved per pupil, keyed by rota week number when ClassCharts gives one (so "Week A" sticks to
 // rota week 1 whatever date you start from), else by position.
-function weekHeading(days, w) {
+function weekTitle(days, w) {
   const rota = rotaWeek(days);
   const key = rota != null ? `rota${rota}` : `idx${w}`;
-  const text = pupilNames().weeks[key] || `Week ${rota ?? w + 1}`;
-  return h('h2', { contenteditable: 'true', spellcheck: 'false', 'data-key': key }, text);
+  return { key, text: pupilNames().weeks[key] || `Week ${rota ?? w + 1}` };
+}
+
+function pupilFirstName() {
+  return ($('#pupil').selectedOptions[0]?.textContent || '').split(' ')[0];
+}
+
+function pageTitle() {
+  const firstName = pupilFirstName();
+  return pupilNames().title || (firstName ? `${firstName}'s Timetable` : 'Timetable');
 }
 
 // One table row's day cells. A day with no lessons at all (holiday) is a single cell spanning every row.

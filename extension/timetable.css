@@ -121,6 +121,14 @@ body.pocket main { width: fit-content; }
 .card .meta span:not(.teacher) { overflow: hidden; text-overflow: ellipsis; }
 .card td.dayoff { font-style: normal; }
 
+/* Phone image preview */
+.phone-dialog { border: 0; border-radius: 12px; padding: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, .3); }
+.phone-dialog::backdrop { background: rgba(0, 0, 0, .45); }
+.phone-options { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px; }
+.phone-options label { display: inline-flex; align-items: center; gap: 6px; }
+#phonePreview { display: block; height: min(70vh, 700px); aspect-ratio: 1170 / 2532; margin: 0 auto; border-radius: 18px; border: 1px solid var(--line); }
+.phone-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
 /* Pocket cards print on portrait A4; everything else on landscape. */
 @page { size: A4 landscape; margin: 10mm; }
 @page pocket { size: A4 portrait; margin: 7mm; }

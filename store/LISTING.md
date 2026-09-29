@@ -41,6 +41,8 @@ this repo to GitHub and link to that file, or paste it into a GitHub Gist.
 >   week labels, and fills gaps left by holidays.
 > • Pocket card: an ID-card-sized (85.6 × 54 mm) version with short subject names, rooms and teacher
 >   initials. Print, cut out, fold, and it fits a standard lanyard holder.
+> • Phone image: a phone-sized picture of the timetable, with space for the lock-screen clock,
+>   to share or set as a lock screen.
 > • "Which week is it?": a button on the ClassCharts timetable shows this week's rota week and the
 >   coming weeks, with holidays marked.
 > • Rename anything (e.g. "Week A"/"Week B", "Further Maths" → "F.Maths"); your settings are remembered.
