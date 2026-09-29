@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Timetable Plus for ClassCharts",
-  "version": "0.1.1",
+  "version": "0.2",
   "description": "Unofficial helper for ClassCharts parents: printable two-week timetable, ID-card pocket timetable and which rota week it is.",
   "permissions": [
     "webRequest",

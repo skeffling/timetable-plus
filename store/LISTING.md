@@ -14,6 +14,7 @@ Images in this folder:
 | `screenshots/1-printable-timetable.png` | Screenshot, 1280×800 |
 | `screenshots/2-pocket-card.png` | Screenshot, 1280×800 |
 | `screenshots/3-extras-panel.png` | Screenshot, 1280×800 |
+| `screenshots/4-phone-image.png` | Screenshot, 1280×800 |
 | `promo-tile-440x280.png` | Chrome "small promo tile" |
 
 All screenshots use made-up demo data (open `extension/timetable.html?demo` to recreate them).
