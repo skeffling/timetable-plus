@@ -27,7 +27,7 @@ Print at 100% (Actual size) so the pocket card comes out the right size. Cut alo
 
 If it says your session has expired, reload the ClassCharts page and click **Reload**.
 
-To preview the layout without logging in, open `extension/timetable.html?demo` in your browser.
+To preview the layout with sample data, download this repo and drag the file `extension/timetable.html` into a browser window.
 
 ## Privacy
 
