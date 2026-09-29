@@ -39,7 +39,7 @@ Screenshots use made-up sample data.
 1. Log in at https://www.classcharts.com/mobile/parent and open the timetable.
 2. Click the blue **Timetable Plus** button in the bottom-right corner.
 3. Choose **Printable timetable** or **Pocket card**, then **Print**.
-4. For a lock screen picture, click **Phone image**, then **Download image** (or **Share** on a phone).
+4. For a phone-sized picture, click **Phone image**. Then **Copy image** to paste it into a message, **Download image** to save it, or **Share** on a phone.
 
 Print at 100% (Actual size) so the pocket card comes out the right size. Cut along the dashed line and fold in the middle.
 

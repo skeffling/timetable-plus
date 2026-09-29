@@ -5,6 +5,8 @@ const PHONE = { width: 1170, height: 2532 }; // 19.5:9, the shape of most curren
 const CELL_INK = '#1d2330'; // lesson cells are pastel in both themes, so their text stays dark
 
 let phoneUrl = null;
+let phoneImage = null; // latest PNG blob, kept so Copy can write it without awaiting (browsers
+                       // only allow clipboard writes straight after the click)
 
 function drawPhoneImage() {
   const { width: W, height: H } = PHONE;
@@ -129,11 +131,13 @@ function phoneFileName() {
 async function showPhoneImage() {
   if (!loaded) return;
   const blob = await phoneBlob();
+  phoneImage = blob;
   if (phoneUrl) URL.revokeObjectURL(phoneUrl);
   phoneUrl = URL.createObjectURL(blob);
   $('#phonePreview').src = phoneUrl;
   const file = new File([blob], phoneFileName(), { type: 'image/png' });
   $('#phoneShare').hidden = !navigator.canShare?.({ files: [file] });
+  $('#phoneCopy').hidden = !(navigator.clipboard?.write && globalThis.ClipboardItem);
   if (!$('#phoneDialog').open) $('#phoneDialog').showModal();
 }
 
@@ -144,6 +148,17 @@ $('#phoneDownload').addEventListener('click', () => {
   document.body.append(a);
   a.click();
   a.remove();
+});
+$('#phoneCopy').addEventListener('click', async () => {
+  const button = $('#phoneCopy');
+  try {
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': phoneImage })]);
+    button.textContent = 'Copied!';
+  } catch (e) {
+    console.warn('Copy failed', e);
+    button.textContent = 'Copy failed';
+  }
+  setTimeout(() => { button.textContent = 'Copy image'; }, 2000);
 });
 $('#phoneShare').addEventListener('click', async () => {
   const file = new File([await phoneBlob()], phoneFileName(), { type: 'image/png' });
