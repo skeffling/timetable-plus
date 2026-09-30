@@ -12,17 +12,47 @@ function ccStore() {
 }
 
 // GET a ClassCharts parent API path with the session the parent's own tab is using.
+// Sessions time out after a few minutes idle (the site gets a fresh one when you reload it), so
+// when ClassCharts refuses a request we ask for a new session the same way and retry once.
 // Errors carry `expired` when logging in again is the likely fix.
-async function ccGet(path) {
+async function ccGet(path, retry = true) {
   const { auth } = await ccStore().get('auth');
   if (!auth) throw Object.assign(new Error('No ClassCharts login seen yet'), { expired: true });
   const res = await fetch(CC_BASE + path, { headers: { Authorization: auth } });
   const json = await res.json().catch(() => null); // non-JSON error page
-  if (!res.ok || !json || json.success === 0) {
-    const msg = json?.error || json?.message || `HTTP ${res.status}`;
-    throw Object.assign(new Error(msg), { expired: res.status === 401 || /session|expired|log ?in|auth/i.test(msg) });
-  }
-  return json;
+  if (res.ok && json && json.success !== 0) return json;
+
+  const refused = [401, 403].includes(res.status) || json?.success === 0;
+  if (retry && refused && await ccRefreshSession(auth)) return ccGet(path, false);
+  const msg = String(json?.error || json?.message || `HTTP ${res.status}`);
+  throw Object.assign(new Error(msg), { expired: refused || /session|expired|log ?in|auth/i.test(msg) });
+}
+
+// Swap a timed-out session for a new one via /ping (as the ClassCharts site does when reloaded).
+// Parallel requests that fail together share one refresh. Resolves true if there's a new session.
+let ccRefreshing = null;
+function ccRefreshSession(oldAuth) {
+  ccRefreshing ??= (async () => {
+    try {
+      // Another request (or the ClassCharts tab) may already have replaced it.
+      if ((await ccStore().get('auth')).auth !== oldAuth) return true;
+      const res = await fetch(`${CC_BASE}/ping`, {
+        method: 'POST',
+        headers: { Authorization: oldAuth, 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'include_data=true',
+      });
+      const json = await res.json().catch(() => null);
+      const sessionId = json?.meta?.session_id;
+      if (!res.ok || json?.success === 0 || !sessionId) return false;
+      await ccStore().set({ auth: `Basic ${sessionId}` });
+      return true;
+    } catch {
+      return false;
+    } finally {
+      queueMicrotask(() => { ccRefreshing = null; });
+    }
+  })();
+  return ccRefreshing;
 }
 
 // The lesson list in a /timetable response (an array, or occasionally keyed by date).

@@ -123,12 +123,29 @@ async function init() {
     return setStatus('This extension needs permission to read classcharts.com. Click the button below, then reload your ClassCharts tab.', true);
   }
 
-  const stored = await ccStore().get(['auth', 'pupilId']);
-  if (!stored.auth) {
-    return setStatus('No ClassCharts login seen yet. Open ClassCharts (www.classcharts.com/mobile/parent), log in and view the timetable, then click Reload.', true);
-  }
-  await loadPupils(params.get('pupil') || stored.pupilId);
+  const { auth } = await ccStore().get('auth');
+  if (auth) return start();
+  setStatus('No ClassCharts login seen yet. Open ClassCharts (www.classcharts.com/mobile/parent) and log in. This page will load by itself.', true);
+  waitForLogin(start);
+}
+
+async function start() {
+  await loadPupils(params.get('pupil') || (await ccStore().get('pupilId')).pupilId);
   generate();
+}
+
+// Run `then` once, the next time background.js sees a (new) ClassCharts login, e.g. after the
+// parent reloads the ClassCharts tab, so there's no need to come back and click Reload.
+let loginWaiter = null;
+function waitForLogin(then) {
+  if (loginWaiter) api.storage.onChanged.removeListener(loginWaiter);
+  loginWaiter = (changes) => {
+    if (!changes.auth?.newValue) return;
+    api.storage.onChanged.removeListener(loginWaiter);
+    loginWaiter = null;
+    then();
+  };
+  api.storage.onChanged.addListener(loginWaiter);
 }
 
 async function grantAccess() {
@@ -217,9 +234,9 @@ async function generate() {
   } catch (e) {
     if (run !== generation) return;
     console.error(e);
-    setStatus(e.expired
-      ? 'Your ClassCharts session has expired. Reload the ClassCharts tab (log in again if asked), then click Reload.'
-      : `Couldn't load the timetable: ${e.message}`, true);
+    if (!e.expired) return setStatus(`Couldn't load the timetable: ${e.message}`, true);
+    setStatus('ClassCharts has logged this session out. Reload the ClassCharts tab (log in again if asked) and this page will update by itself.', true);
+    if (!DEMO) waitForLogin(generate);
   }
 }
 
