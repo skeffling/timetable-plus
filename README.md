@@ -11,6 +11,8 @@ ClassCharts shows one day at a time. Timetable Plus shows the whole rota at once
 
 ![Phone-sized image for a lock screen](store/screenshots/4-phone-image.png)
 
+![Timetable Plus on a phone](store/screenshots/5-android.png)
+
 Screenshots use made-up sample data.
 
 ## Features
