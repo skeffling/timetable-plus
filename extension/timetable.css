@@ -129,6 +129,21 @@ body.pocket main { width: fit-content; }
 #phonePreview { display: block; height: min(70vh, 700px); aspect-ratio: 1170 / 2532; margin: 0 auto; border-radius: 18px; border: 1px solid var(--line); }
 .phone-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
+/* Phones (e.g. Firefox for Android): keep tables readable and swipe them sideways
+   rather than squashing five days into a narrow screen. */
+@media screen and (max-width: 700px) {
+  body { padding: 8px; font-size: 13px; }
+  .controls { padding: 10px; gap: 8px 12px; }
+  .controls .sep { display: none; }
+  main { padding: 12px; }
+  .week { overflow-x: auto; }
+  .week:not(.card) table { min-width: 620px; }
+  body.pocket main { width: auto; overflow-x: auto; }
+  .phone-dialog { max-width: calc(100vw - 16px); padding: 12px; }
+  #phonePreview { height: min(60vh, 560px); max-width: 100%; }
+  .phone-actions { flex-wrap: wrap; }
+}
+
 /* Pocket cards print on portrait A4; everything else on landscape. */
 @page { size: A4 landscape; margin: 10mm; }
 @page pocket { size: A4 portrait; margin: 7mm; }
