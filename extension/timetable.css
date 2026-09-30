@@ -4,6 +4,32 @@
   --line: #c9ced8;
   --bg: #f4f6f9;
   --accent: #2196f3;
+  --surface: #fff;      /* panels and buttons */
+  --head: #eef1f5;      /* day headings */
+  --rowhead: #f8f9fb;   /* period column */
+  --stripe-a: #fafafa;  /* free periods */
+  --stripe-b: #f0f0f0;
+  --meta: #333;
+  --error: #b3261e;
+  --cell-ink: #1d2330;  /* text on pastel lesson cells, the same in both themes */
+}
+
+/* Dark mode follows the browser, on screen only: printouts always stay light. */
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ink: #e6e9ef;
+    --muted: #9aa3b5;
+    --line: #3a4250;
+    --bg: #12161d;
+    --surface: #1b2029;
+    --head: #232a35;
+    --rowhead: #1f2530;
+    --stripe-a: #1b2029;
+    --stripe-b: #222833;
+    --meta: #c3c9d4;
+    --error: #ff8a80;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -22,7 +48,7 @@ body {
   align-items: center;
   gap: 10px 16px;
   padding: 12px 14px;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
   margin-bottom: 12px;
@@ -35,17 +61,18 @@ button {
   padding: 5px 14px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--surface);
+  color: var(--ink);
   cursor: pointer;
 }
 button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 .status { margin: 0 0 12px; color: var(--muted); }
-.status.error { color: #b3261e; font-weight: 600; }
+.status.error { color: var(--error); font-weight: 600; }
 #grant { margin-bottom: 12px; }
 
 main {
-  background: #fff;
+  background: var(--surface);
   padding: 18px 20px;
   border-radius: 8px;
   border: 1px solid var(--line);
@@ -67,19 +94,23 @@ h1:empty { display: none; }
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 th, td { border: 1px solid var(--line); padding: 6px 7px; vertical-align: top; }
 thead th:first-child { width: 92px; }
-thead th { background: #eef1f5; font-size: 13px; }
+thead th { background: var(--head); font-size: 13px; }
 thead th .date { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
-tbody th { width: 92px; text-align: left; background: #f8f9fb; font-size: 12px; }
+tbody th { width: 92px; text-align: left; background: var(--rowhead); font-size: 12px; }
 tbody th .pname { display: block; font-size: 13px; }
 tbody th .ptime { color: var(--muted); font-weight: 400; }
 
 td.has-lesson { height: 64px; }
 .subject { font-weight: 700; font-size: 14px; }
 .code { font-size: 11px; color: var(--muted); }
-.meta { font-size: 12px; color: #333; }
+.meta { font-size: 12px; color: var(--meta); }
 .time { font-size: 11px; color: var(--muted); }
 .lesson + .lesson { border-top: 1px dashed rgba(0, 0, 0, .2); margin-top: 4px; padding-top: 4px; }
-td.nolesson { background: repeating-linear-gradient(45deg, #fafafa, #fafafa 6px, #f0f0f0 6px, #f0f0f0 12px); }
+td.nolesson { background: repeating-linear-gradient(45deg, var(--stripe-a), var(--stripe-a) 6px, var(--stripe-b) 6px, var(--stripe-b) 12px); }
+/* Lesson cells are pastel in both themes, so their text stays dark. */
+td.has-lesson { color: var(--cell-ink); }
+td.has-lesson .meta { color: #333; }
+td.has-lesson .code, td.has-lesson .time { color: #5d6677; }
 td.dayoff { text-align: center; vertical-align: middle; color: var(--muted); font-style: italic; }
 
 .hint { color: var(--muted); font-size: 12px; }
@@ -122,7 +153,7 @@ body.pocket main { width: fit-content; }
 .card td.dayoff { font-style: normal; }
 
 /* Phone image preview */
-.phone-dialog { border: 0; border-radius: 12px; padding: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, .3); }
+.phone-dialog { border: 0; background: var(--surface); color: var(--ink); border-radius: 12px; padding: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, .3); }
 .phone-dialog::backdrop { background: rgba(0, 0, 0, .45); }
 .phone-options { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px; }
 .phone-options label { display: inline-flex; align-items: center; gap: 6px; }
